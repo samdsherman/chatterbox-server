@@ -44,24 +44,45 @@ exports.requestHandler = function(request, response) {
   if (request.method === 'POST') {
     statusCode = 201;
   }
-  if (request.url.split('?')[0] !== '/classes/messages/') {
+  var splitURL = request.url.split('?');
+
+  if (splitURL[0] !== '/classes/messages/' && splitURL[0] !== '/classes/messages') {
     statusCode = 404;
   }
+
+  var params = splitURL[1] ? splitURL[1].split('&') : '';
+
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
 
   if (request.method === 'GET') {
-    response.end(JSON.stringify({results: _messages}));
+    var reverseOrder = false;
+    for (var i = 0; i < params.length; ++i) {
+      console.log(params[i]);
+      var pair = params[i].split('=');
+      if (pair[0] === 'order' && pair[1] === '-createdAt') {
+        reverseOrder = true;
+      }
+    }
+
+    var result = _messages;
+    if (reverseOrder) {
+      result = _messages.slice(0).reverse();
+    }
+
+    response.end(JSON.stringify({results: result}));
     // return data somewhere
 
   } else if (request.method === 'POST') {
     // save data somewhere
     // console.log(request);
+    debugger;
     request.on('data', function(data) {
       var message = JSON.parse(data);
       message.objectId = _messages.length + 1;
+      message.createdAt = Date.now();
       _messages.push(message);
     });
     response.end();

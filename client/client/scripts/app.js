@@ -74,7 +74,7 @@ var app = {
         var mostRecentMessage = data.results[data.results.length - 1];
 
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId) {
+        if (/*mostRecentMessage.objectId !== app.lastMessageId*/ true) {
           // Update the UI with the fetched rooms
           app.renderRoomList(data.results);
 
@@ -227,11 +227,11 @@ var app = {
 
   startSpinner: function() {
     $('.spinner img').show();
-    $('form input[type=submit]').attr('disabled', 'true');
+    // $('form input[type=submit]').attr('disabled', 'true');
   },
 
   stopSpinner: function() {
     $('.spinner img').fadeOut('fast');
-    $('form input[type=submit]').attr('disabled', null);
+    // $('form input[type=submit]').attr('disabled', null);
   }
 };
