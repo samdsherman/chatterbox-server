@@ -26,7 +26,7 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
-
+      <script>app.init()</script>
       <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
       <div id="rooms">
         Room:
@@ -40,8 +40,10 @@
     <div id="chats"></div>
 
     <script>
+      console.log('in script tag');
       $(function(){
-        app.init()
+        console.log('in index.html');
+        app.init();
       });
     </script>  </body>
 </html>
