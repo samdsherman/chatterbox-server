@@ -116,4 +116,46 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should return messages in the order requested', function() {
+    var stub1 = {
+      username: 'Fred',
+      message: 'I am the best!'
+    };
+    var stub2 = {
+      username: 'Student',
+      message: 'Yes you are!'
+    };
+
+    var req1 = new stubs.request('/classes/messages', 'POST', stub1);
+    var res1 = new stubs.response();
+
+    handler.requestHandler(req1, res1);
+
+    var req2 = new stubs.request('/classes/messages', 'POST', stub2);
+    var res2 = new stubs.response();
+
+    handler.requestHandler(req2, res2);
+
+    req = new stubs.request('/classes/messages/?order=-createdAt', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    messages = JSON.parse(res._data).results;
+    expect(messages[0].username).to.equal('Student');
+  });
+
+  it('Should return an error code if message doesn\'t have enough data', function() {
+    var stub = {
+      username: 'oh no!'
+    };
+
+    var req = new stubs.request('/classes/messages', 'POST', stub);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(400);
+  });
+
 });

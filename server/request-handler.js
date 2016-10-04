@@ -34,7 +34,7 @@ exports.requestHandler = function(request, response) {
   var statusCode = 200;
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+  var headers = defaultCorsHeaders; // eslint-disable-line no-use-before-define
 
   // Tell the client we are sending them plain text.
   //
@@ -76,14 +76,17 @@ exports.requestHandler = function(request, response) {
     // return data somewhere
 
   } else if (request.method === 'POST') {
+
     // save data somewhere
-    // console.log(request);
-    debugger;
     request.on('data', function(data) {
       var message = JSON.parse(data);
-      message.objectId = _messages.length + 1;
-      message.createdAt = Date.now();
-      _messages.push(message);
+      if (message.username && message.message) {
+        message.objectId = _messages.length + 1;
+        message.createdAt = Date.now();
+        _messages.push(message);
+      } else {
+        response.writeHead(400, headers);
+      }
     });
     response.end();
   } else if (request.method === 'OPTIONS') {
