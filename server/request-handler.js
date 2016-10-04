@@ -11,6 +11,8 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var fs = require('fs');
+
 var _messages = [
 ];
 
@@ -58,6 +60,19 @@ exports.requestHandler = function(request, response) {
   response.writeHead(statusCode, headers);
 
   if (request.method === 'GET') {
+    // if (request.url === '/') {
+    //   var stream = fs.createReadStream('hello.txt');
+    //   stream.resume();
+    //   var htmlText = '';
+    //   var nextChunk;
+    //   console.log(stream.read());
+    //   while (nextChunk = stream.read()) {
+    //     htmlText += nextChunk;
+    //   }
+    //   response.end(htmlText);
+    // }
+
+
     var reverseOrder = false;
     for (var i = 0; i < params.length; ++i) {
       console.log(params[i]);
@@ -80,7 +95,10 @@ exports.requestHandler = function(request, response) {
     // save data somewhere
     request.on('data', function(data) {
       var message = JSON.parse(data);
-      if (message.username && message.message) {
+      if (message.message) {
+        message.text = message.message;
+      }
+      if (message.username && message.text) {
         message.objectId = _messages.length + 1;
         message.createdAt = Date.now();
         _messages.push(message);
