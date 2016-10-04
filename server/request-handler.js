@@ -13,8 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 var fs = require('fs');
 
-var _messages = [
-];
+var _messages = JSON.parse(fs.readFileSync('messageLog.txt'));
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -46,7 +45,7 @@ exports.requestHandler = function(request, response) {
   if (request.method === 'POST') {
     statusCode = 201;
   }
-  var splitURL = request.url.split('?');
+  var splitURL = request.url.split('?'); 
 
   if (splitURL[0] !== '/classes/messages/' && splitURL[0] !== '/classes/messages') {
     statusCode = 404;
@@ -60,17 +59,26 @@ exports.requestHandler = function(request, response) {
   response.writeHead(statusCode, headers);
 
   if (request.method === 'GET') {
-    // if (request.url === '/') {
-    //   var stream = fs.createReadStream('hello.txt');
-    //   stream.resume();
-    //   var htmlText = '';
-    //   var nextChunk;
-    //   console.log(stream.read());
-    //   while (nextChunk = stream.read()) {
-    //     htmlText += nextChunk;
-    //   }
-    //   response.end(htmlText);
-    // }
+    if (request.url === '/' || request.url.indexOf('username') !== -1) {
+      console.log('hello');
+      var htmlText = fs.readFileSync('client/client/index.html');
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(htmlText);
+      response.end();
+    } else if (request.url === '/styles/styles.css'
+      || request.url === '/scripts/app.js'
+      || request.url === '/bower_components/jquery/dist/jquery.js'
+      || request.url === '/images/spiffygif_46x46.gif') {
+      request.url = process.cwd() + '/client/client' + request.url; 
+      var file = fs.readFileSync(request.url);
+      response.writeHead(200, {'Content-Type': 'text/html'});
+      response.write(file); 
+      response.end(); 
+    // } else if (request.url.indexOf('username') !== -1) {
+    //   console.log('in username handler');
+    //   response.end(); 
+    //   return;
+    }
 
 
     var reverseOrder = false;
@@ -102,6 +110,8 @@ exports.requestHandler = function(request, response) {
         message.objectId = _messages.length + 1;
         message.createdAt = Date.now();
         _messages.push(message);
+        console.log(message);
+        fs.writeFileSync('messageLog.txt', JSON.stringify(_messages));
       } else {
         response.writeHead(400, headers);
       }
